@@ -1,0 +1,26 @@
+bible-quiz-game/
+├── public/
+│   ├── index.php           # Dashboard / start quiz
+│   ├── login.php
+│   ├── register.php
+│   ├── logout.php
+│   ├── quiz.php            # quiz UI (AJAX calls)
+│   ├── api.php             # AJAX endpoint for questions/submit
+│   ├── leaderboard.php
+│   ├── style.css
+│   └── script.js
+├── src/
+│   ├── db.php
+│   └── functions.php
+├── config/
+│   └── config.php
+├── database/
+│   └── database.sql
+├── .gitignore
+└── README.md
+├── admin/
+│   ├── index.php
+│   ├── add_question.php
+│   ├── edit_question.php
+│   ├── delete_question.php
+│   └── style.css   (optional, can use public/style.css or duplicate)
