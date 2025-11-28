@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Now we can use session variables
+// User info from session
 $user_name = $_SESSION['user_name'];
 $user_email = $_SESSION['user_email'];
 ?>
@@ -15,7 +15,7 @@ $user_email = $_SESSION['user_email'];
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome to Christian Quiz</title>
+    <title>Christian Quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,12 +23,12 @@ $user_email = $_SESSION['user_email'];
     <h2>Welcome, <?= htmlspecialchars($user_name); ?>!</h2>
     <p>Email: <?= htmlspecialchars($user_email); ?></p>
 
-    <p>
-        <a href="quiz.php" class="btn">Take Quiz</a> |
-        <a href="quiz_history.php" class="btn">My Quiz History</a> |
-        <a href="leaderboard.php" class="btn">Leaderboard</a> |
+    <div style="margin-top:20px;">
+        <a href="quiz.php" class="btn">Take Quiz</a>
+        <a href="quiz_history.php" class="btn">My Quiz History</a>
+        <a href="leaderboard.php" class="btn">Leaderboard</a>
         <a href="logout.php" class="btn">Logout</a>
-    </p>
+    </div>
 </div>
 </body>
 </html>
