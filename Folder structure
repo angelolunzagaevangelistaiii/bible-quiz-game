@@ -1,30 +1,38 @@
 bible-quiz-game/
-├── public/
-│   ├── index.php           # Dashboard / start quiz
-│   ├── login.php
-│   ├── register.php
-│   ├── logout.php
-│   ├── quiz.php            # quiz UI (AJAX calls)
-│   ├── api.php             # AJAX endpoint for questions/submit
-│   ├── leaderboard.php
-│   ├── style.css
-│   └── script.js
-├── src/
-│   ├── db.php
-│   └── functions.php
 ├── config/
-│   └── config.php
+│   ├── config.php             # Database connection and global settings
+│   └── db.php                 # Optional separate DB connection
+│
+├── src/
+│   ├── functions.php          # Common functions (esc(), requireLogin(), etc.)
+│   └── auth.php               # User authentication helpers
+│
 ├── database/
-│   └── database.sql
-├── .gitignore
-└── README.md
-├── admin/
+│   └── database.sql           # MySQL tables: users, admins, questions, leaderboard
+│
+├── public/                    # Public-facing pages for users
+│   ├── index.php              # Quiz start page
+│   ├── quiz.php               # Quiz page (questions)
+│   ├── quiz_result.php        # Quiz result page
+│   ├── leaderboard.php        # Public leaderboard
+│   ├── quiz_history.php       # User's past quiz attempts
+│   ├── login.php              # User login page
+│   ├── register.php           # User registration page
+│   ├── logout.php             # User logout
+│   └── style.css              # Public CSS
+│
+├── admin/                     # Admin panel pages
 │   ├── admin_login.php
 │   ├── admin_logout.php
-│   ├── admin_protect.php
+│   ├── auth_check.php
 │   ├── index.php
+│   ├── sidebar_topbar.php
 │   ├── add_question.php
 │   ├── edit_question.php
 │   ├── delete_question.php
-│   └── style.css   (optional, can use public/style.css or duplicate)
-
+│   ├── manage_questions.php
+│   ├── leaderboard.php
+│   └── export_leaderboard.php
+│
+├── .gitignore                 # Ignore config.php, sessions, sensitive files
+├── README.md
