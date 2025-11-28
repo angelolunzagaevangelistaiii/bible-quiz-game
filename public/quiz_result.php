@@ -1,22 +1,20 @@
 <?php
 session_start();
 
-// Check if user is logged in and has a quiz result
+// Check login & quiz session
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['last_quiz'])) {
     header("Location: quiz.php");
     exit;
 }
 
-// Get quiz data from session
+// Get quiz data
 $quiz = $_SESSION['last_quiz'];
+unset($_SESSION['last_quiz']); // prevent reload
 
-// Clear the session so user cannot reload result and change it
-unset($_SESSION['last_quiz']);
-
-// Determine if user was correct
 $is_correct = ($quiz['selected'] === $quiz['correct']);
 $score_display = $is_correct ? 1 : 0;
 
+// Function to get option text
 function getOptionText($quiz, $option)
 {
     switch ($option) {
