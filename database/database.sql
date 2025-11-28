@@ -10,19 +10,6 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS questions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  scripture_ref VARCHAR(80),
-  question TEXT,
-  option_a VARCHAR(255),
-  option_b VARCHAR(255),
-  option_c VARCHAR(255),
-  option_d VARCHAR(255),
-  category VARCHAR(50) DEFAULT 'Faith',
-  difficulty ENUM('Easy','Medium','Hard') DEFAULT 'Easy',
-  correct CHAR(1) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS scores (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
@@ -32,21 +19,44 @@ CREATE TABLE IF NOT EXISTS scores (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS user_quiz_results (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    question_id INT NOT NULL,
-    user_answer VARCHAR(1) NOT NULL,
-    is_correct TINYINT(1) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- questions (with category & difficulty)
+CREATE TABLE IF NOT EXISTS questions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  scripture_ref VARCHAR(120),
+  question TEXT,
+  option_a VARCHAR(255),
+  option_b VARCHAR(255),
+  option_c VARCHAR(255),
+  option_d VARCHAR(255),
+  correct CHAR(1) NOT NULL,
+  category VARCHAR(100) DEFAULT 'Faith',
+  difficulty ENUM('Easy','Medium','Hard') DEFAULT 'Easy'
 );
 
-CREATE TABLE IF NOT EXISTS leaderboard (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    score INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- per-question answers (tracking)
+CREATE TABLE IF NOT EXISTS user_quiz_results (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_name VARCHAR(255),
+  user_email VARCHAR(255),
+  user_id INT NULL,
+  question_id INT,
+  user_answer CHAR(1),
+  is_correct TINYINT(1),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (question_id)
 );
+
+-- leaderboard (overall attempt)
+CREATE TABLE IF NOT EXISTS leaderboard (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  score INT NOT NULL,
+  category VARCHAR(100),
+  difficulty VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 CREATE TABLE admin_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,9 +74,9 @@ INSERT INTO users (name,email,password) VALUES
 ('Test User','test@example.com','$2y$10$Ap2l0dx0uSuaoyWSQn2ToOkyp6UpH9x0LulzjhQYU7lnsrQ/szDXC');
 
 -- sample questions
-INSERT INTO questions (scripture_ref,question,option_a,option_b,option_c,option_d,correct) VALUES
-('John 3:16','What is the core message of John 3:16?','God so loved the world','God is angry','God is distant','God is silent','A'),
-('Genesis 1:1','How does Genesis 1:1 begin?','In the beginning God created the heavens and the earth','God created man first','In the end God created','God rested first','A'),
-('Psalm 23:1','Psalm 23 opens with which phrase?','The Lord is my shepherd','The Lord is my king','The Lord is my judge','The Lord is my light','A');
-
-
+INSERT INTO questions (scripture_ref, question, option_a, option_b, option_c, option_d, correct, category, difficulty) VALUES
+('John 3:16','What is the key phrase of John 3:16?','For God so loved the world','Judge the world','Remain silent forever','Only angels see it','A','Gospels','Easy'),
+('Genesis 1:1','How does Genesis 1:1 begin?','In the beginning God created the heavens and the earth','God created humans first','God rested','God spoke to Moses','A','Faith','Easy'),
+('Psalm 23:1','Psalm 23 starts with which phrase?','The Lord is my shepherd','The Lord is my king','The Lord is my judge','The Lord is my light','A','Wisdom','Easy'),
+('Matthew 28:19','What are followers commanded to do in Matthew 28:19?','Make disciples of all nations','Pray only on Sundays','Hide your faith','Leave the city','A','Gospels','Medium'),
+('Revelation 21:4','What will YHVH do in Revelation 21:4?','Wipe away every tear','Send every tear back','Make tears multiply','Teach people to ignore pain','A','Prophecy','Medium');
