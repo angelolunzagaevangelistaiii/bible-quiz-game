@@ -1,27 +1,29 @@
 <?php
 session_start();
-require_once __DIR__ . '/admin_protect.php';
+require "../config/db.php";
+require "auth_check.php";
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin Dashboard</title>
-<link rel="stylesheet" href="../public/style.css">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+<div class="sidebar">
+    <h2><?= $_SESSION['admin_name'] ?></h2>
+    <a href="index.php">Dashboard</a>
+    <a href="add_question.php">Add Question</a>
+    <a href="manage_questions.php">Manage Questions</a>
+    <a href="admin_logout.php">Logout</a>
+</div>
 
-<div class="container">
-<h2>Admin Dashboard</h2>
+<div class="topbar">Christian Quiz Admin</div>
 
-<p>Welcome, <strong><?= $_SESSION['admin_name'] ?></strong> (<?= $_SESSION['admin_email'] ?>)</p>
-
-<ul class="admin-menu">
-    <li><a href="add_question.php">Add Question</a></li>
-    <li><a href="questions_list.php">Manage All Questions</a></li>
-    <li><a href="../leaderboard.php">Leaderboard</a></li>
-    <li><a href="admin_logout.php">Logout</a></li>
-</ul>
-
+<div class="content">
+    <h1>Welcome, <?= $_SESSION['admin_name'] ?></h1>
+    <p>You are logged in as <strong><?= $_SESSION['admin_email'] ?></strong></p>
 </div>
 </body>
 </html>
