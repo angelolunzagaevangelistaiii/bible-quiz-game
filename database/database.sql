@@ -47,14 +47,16 @@ CREATE TABLE IF NOT EXISTS user_quiz_results (
 );
 
 -- leaderboard (overall attempt)
-CREATE TABLE IF NOT EXISTS leaderboard (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  score INT NOT NULL,
-  category VARCHAR(100),
-  difficulty VARCHAR(50),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE leaderboard (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    score INT NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    difficulty VARCHAR(100) NOT NULL,
+    date_taken DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 
@@ -80,3 +82,4 @@ INSERT INTO questions (scripture_ref, question, option_a, option_b, option_c, op
 ('Psalm 23:1','Psalm 23 starts with which phrase?','The Lord is my shepherd','The Lord is my king','The Lord is my judge','The Lord is my light','A','Wisdom','Easy'),
 ('Matthew 28:19','What are followers commanded to do in Matthew 28:19?','Make disciples of all nations','Pray only on Sundays','Hide your faith','Leave the city','A','Gospels','Medium'),
 ('Revelation 21:4','What will YHVH do in Revelation 21:4?','Wipe away every tear','Send every tear back','Make tears multiply','Teach people to ignore pain','A','Prophecy','Medium');
+
