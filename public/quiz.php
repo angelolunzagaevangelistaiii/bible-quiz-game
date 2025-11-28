@@ -28,7 +28,7 @@ if ($diff_result) {
     while ($row = $diff_result->fetch_assoc()) $difficulties[] = $row['difficulty'];
 }
 
-// Stage 2: Answer submitted
+// Handle answer submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $selected = $_POST['answer'];
     $correct_answer = $_POST['correct_answer'];
@@ -36,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
 
-    // Option texts
     $option_a = $_POST['option_a'];
     $option_b = $_POST['option_b'];
     $option_c = $_POST['option_c'];
@@ -50,16 +49,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $stmt->execute();
     $stmt->close();
 
-    // Store all data in session
+    // Store quiz data in session
     $_SESSION['last_quiz'] = [
         'question' => $question_text,
         'selected' => $selected,
         'correct' => $correct_answer,
+        'correct_text' => ${'option_' . strtolower($correct_answer)},
         'option_a' => $option_a,
         'option_b' => $option_b,
         'option_c' => $option_c,
         'option_d' => $option_d,
-        'correct_text' => ${'option_' . strtolower($correct_answer)},
         'category' => $category,
         'difficulty' => $difficulty,
         'score' => $score
@@ -69,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     exit;
 }
 
-// Stage 1: Fetch question after category/difficulty selection
+// Handle question fetch after category/difficulty selection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
@@ -100,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
 
     <?php if (!$question): ?>
-        <!-- Stage 1: Category/Difficulty Selection -->
+        <!-- Stage 1: Select category/difficulty -->
         <form method="POST">
             <label>Category:</label>
             <select name="category" required>
@@ -117,11 +116,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
             <button type="submit" name="fetch_question">Start Quiz</button>
         </form>
     <?php else: ?>
-        <!-- Stage 2: Show Question Form -->
+        <!-- Stage 2: Show question -->
         <form method="POST">
             <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
 
-            <!-- Hidden inputs for session -->
+            <!-- Hidden inputs -->
             <input type="hidden" name="question_text" value="<?= htmlspecialchars($question['question']); ?>">
             <input type="hidden" name="category" value="<?= htmlspecialchars($question['category']); ?>">
             <input type="hidden" name="difficulty" value="<?= htmlspecialchars($question['difficulty']); ?>">
