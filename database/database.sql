@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS leaderboard (
 
 CREATE TABLE admin_users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(150) UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -68,3 +68,4 @@ INSERT INTO questions (scripture_ref,question,option_a,option_b,option_c,option_
 ('John 3:16','What is the core message of John 3:16?','God so loved the world','God is angry','God is distant','God is silent','A'),
 ('Genesis 1:1','How does Genesis 1:1 begin?','In the beginning God created the heavens and the earth','God created man first','In the end God created','God rested first','A'),
 ('Psalm 23:1','Psalm 23 opens with which phrase?','The Lord is my shepherd','The Lord is my king','The Lord is my judge','The Lord is my light','A');
+
