@@ -26,8 +26,14 @@ while ($row = $diff_result->fetch_assoc()) $difficulties[] = $row['difficulty'];
 // Stage 2: Submit answer
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $selected = $_POST['answer'];
-    $score = ($selected === $_POST['correct_answer']) ? 1 : 0;
+    $correct_answer = $_POST['correct_answer'];
+    $category = $_POST['category'];
+    $difficulty = $_POST['difficulty'];
+    $question_text = $_POST['question_text'];
 
+    $score = ($selected === $correct_answer) ? 1 : 0;
+
+    // Save to leaderboard
     $stmt = $conn->prepare("INSERT INTO leaderboard (user_id, name, email, score, category, difficulty) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param(
         "ississ",
@@ -35,13 +41,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
         $user_name,
         $user_email,
         $score,
-        $_POST['category'],
-        $_POST['difficulty']
+        $category,
+        $difficulty
     );
     $stmt->execute();
     $stmt->close();
 
-    header("Location: quiz_result.php?score=$score");
+    // Store quiz result info in session
+    $_SESSION['last_quiz'] = [
+        'question' => $question_text,
+        'selected' => $selected,
+        'correct' => $correct_answer,
+        'category' => $category,
+        'difficulty' => $difficulty,
+        'score' => $score
+    ];
+
+    header("Location: quiz_result.php");
     exit;
 }
 
@@ -72,44 +88,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
 <div class="container">
     <h2>Quiz</h2>
 
-    <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
-
-    <?php if (!$question): ?>
-        <!-- Stage 1: Category/Difficulty Form -->
-        <form method="POST">
-            <label>Category:</label>
-            <select name="category" required>
-                <option value="">Select Category</option>
-                <?php foreach ($categories as $cat) echo "<option value=\"$cat\">$cat</option>"; ?>
-            </select>
-
-            <label>Difficulty:</label>
-            <select name="difficulty" required>
-                <option value="">Select Difficulty</option>
-                <?php foreach ($difficulties as $diff) echo "<option value=\"$diff\">$diff</option>"; ?>
-            </select>
-
-            <button type="submit" name="fetch_question">Start Quiz</button>
-        </form>
-    <?php else: ?>
-        <!-- Stage 2: Show Question Form -->
-        <form method="POST">
-            <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
-
-            <input type="hidden" name="category" value="<?= htmlspecialchars($question['category']); ?>">
-            <input type="hidden" name="difficulty" value="<?= htmlspecialchars($question['difficulty']); ?>">
-            <input type="hidden" name="correct_answer" value="<?= htmlspecialchars($question['correct_answer']); ?>">
-
-            <input type="radio" name="answer" value="A" required> <?= htmlspecialchars($question['option_a']); ?><br>
-            <input type="radio" name="answer" value="B"> <?= htmlspecialchars($question['option_b']); ?><br>
-            <input type="radio" name="answer" value="C"> <?= htmlspecialchars($question['option_c']); ?><br>
-            <input type="radio" name="answer" value="D"> <?= htmlspecialchars($question['option_d']); ?><br><br>
-
-            <button type="submit">Submit Answer</button>
-        </form>
-    <?php endif; ?>
-
-    <a href="index.php" class="btn">Back to Menu</a>
-</div>
-</body>
-</html>
+    <?php if
