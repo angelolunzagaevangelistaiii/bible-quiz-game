@@ -1,39 +1,28 @@
 <?php
 session_start();
-require "../config/db.php";
+require_once "../config/config.php";
 
-// If already logged in, redirect to dashboard
-if (isset($_SESSION['admin_id'])) {
-    header("Location: index.php");
-    exit;
-}
+$error = '';
 
-$error = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $password = trim($_POST['password']); // store hashed passwords in DB
 
-    $stmt = $conn->prepare("SELECT id, name, email, password FROM admins WHERE email = ?");
+    // Fetch admin from database
+    $stmt = $conn->prepare("SELECT * FROM admins WHERE email=? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows == 1) {
-        $stmt->bind_result($id, $name, $email, $hashed_password);
-        $stmt->fetch();
-
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION['admin_id'] = $id;
-            $_SESSION['admin_name'] = $name;
-            $_SESSION['admin_email'] = $email;
-            header("Location: index.php");
-            exit;
-        } else {
-            $error = "Incorrect password.";
-        }
+    $result = $stmt->get_result();
+    $admin = $result->fetch_assoc();
+    
+    if ($admin && password_verify($password, $admin['password'])) {
+        // Successful login
+        $_SESSION['admin_id'] = $admin['id'];
+        $_SESSION['admin_name'] = $admin['name'];
+        header("Location: index.php");
+        exit;
     } else {
-        $error = "Admin not found.";
+        $error = "Invalid email or password.";
     }
 }
 ?>
@@ -42,27 +31,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <title>Admin Login</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../public/style.css">
 </head>
 <body>
-
-<div class="login-box">
+<div class="container">
     <h2>Admin Login</h2>
-
-    <?php if ($error): ?>
-        <div class="error-box"><?= $error ?></div>
-    <?php endif; ?>
-
+    <?php if($error) echo "<p style='color:red;'>$error</p>"; ?>
     <form method="POST">
-        <label>Email</label>
-        <input type="email" name="email" required>
-
-        <label>Password</label>
-        <input type="password" name="password" required>
-
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+        <label>Password:</label><br>
+        <input type="password" name="password" required><br><br>
         <button type="submit">Login</button>
     </form>
 </div>
-
 </body>
 </html>
