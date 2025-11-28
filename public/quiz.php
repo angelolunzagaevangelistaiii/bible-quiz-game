@@ -36,7 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
 
-    // Store score
+    // Option texts
+    $option_a = $_POST['option_a'];
+    $option_b = $_POST['option_b'];
+    $option_c = $_POST['option_c'];
+    $option_d = $_POST['option_d'];
+
     $score = ($selected === $correct_answer) ? 1 : 0;
 
     // Save to leaderboard
@@ -45,19 +50,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $stmt->execute();
     $stmt->close();
 
-    // Store all data in session for quiz_result.php
+    // Store all data in session
     $_SESSION['last_quiz'] = [
-    'question' => $question_text,
-    'selected' => $selected,
-    'correct' => $correct_answer, // letter e.g., A/B/C/D
-    'correct_text' => $question['option_' . strtolower($correct_answer)], // text of correct answer
-    'option_a' => $question['option_a'],
-    'option_b' => $question['option_b'],
-    'option_c' => $question['option_c'],
-    'option_d' => $question['option_d'],
-    'category' => $category,
-    'difficulty' => $difficulty,
-    'score' => $score
+        'question' => $question_text,
+        'selected' => $selected,
+        'correct' => $correct_answer,
+        'option_a' => $option_a,
+        'option_b' => $option_b,
+        'option_c' => $option_c,
+        'option_d' => $option_d,
+        'correct_text' => ${'option_' . strtolower($correct_answer)},
+        'category' => $category,
+        'difficulty' => $difficulty,
+        'score' => $score
     ];
 
     header("Location: quiz_result.php");
@@ -116,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
         <form method="POST">
             <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
 
-            <!-- Hidden fields for quiz result -->
+            <!-- Hidden inputs for session -->
             <input type="hidden" name="question_text" value="<?= htmlspecialchars($question['question']); ?>">
             <input type="hidden" name="category" value="<?= htmlspecialchars($question['category']); ?>">
             <input type="hidden" name="difficulty" value="<?= htmlspecialchars($question['difficulty']); ?>">
