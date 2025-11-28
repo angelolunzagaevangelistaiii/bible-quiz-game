@@ -1,5 +1,5 @@
 <?php
-require_once "admin_protect.php"; // Protect page
+require_once "admin_protect.php"; // ensure admin is logged in
 $admin_name = $_SESSION['admin_name'];
 ?>
 
