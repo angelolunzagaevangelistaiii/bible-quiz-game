@@ -9,16 +9,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
 
     if (empty($email) || empty($password)) {
-        $errors[] = "Please enter email and password.";
+        $errors[] = "Please enter both email and password.";
     } else {
         $stmt = $conn->prepare("SELECT id, name, email, password FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
+
         if ($result->num_rows === 1) {
             $row = $result->fetch_assoc();
             if (password_verify($password, $row['password'])) {
-                // Correct session variables
+                // Set session variables
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['user_name'] = $row['name'];
                 $_SESSION['user_email'] = $row['email'];
@@ -42,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div class="container">
     <h2>Login</h2>
 
@@ -53,15 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
         <label>Email:</label>
-        <input type="email" name="email" required>
+        <input type="email" name="email" placeholder="Enter your email" required>
 
         <label>Password:</label>
-        <input type="password" name="password" required>
+        <input type="password" name="password" placeholder="Enter your password" required>
 
         <button type="submit">Login</button>
     </form>
 
     <p>Don't have an account? <a href="register.php">Register here</a></p>
 </div>
+
 </body>
 </html>
