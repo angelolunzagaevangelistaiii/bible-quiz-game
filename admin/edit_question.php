@@ -1,83 +1,101 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/db.php';
-require_once __DIR__ . '/../src/functions.php';
-requireLogin();
-requireAdmin();
+require "../config/db.php";
+require "auth_check.php";
 
-$id = intval($_GET['id']);
-$res = $mysqli->query("SELECT * FROM questions WHERE id=$id");
-$question = $res->fetch_assoc();
-if(!$question) die("Question not found!");
+if (!isset($_GET['id'])) {
+    header("Location: manage_questions.php");
+    exit;
+}
 
-$msg = '';
+$id = $_GET['id'];
 
-if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $scripture = trim($_POST['scripture_ref']);
-    $qtext = trim($_POST['question']);
-    $a = trim($_POST['option_a']);
-    $b = trim($_POST['option_b']);
-    $c = trim($_POST['option_c']);
-    $d = trim($_POST['option_d']);
-    $correct = $_POST['correct'];
+$stmt = $conn->prepare("SELECT * FROM questions WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$questionData = $stmt->get_result()->fetch_assoc();
+
+if (!$questionData) {
+    die("Question not found.");
+}
+
+$success = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $question = $_POST['question'];
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
+    $correct = $_POST['correct_answer'];
+    $a = $_POST['option_a'];
+    $b = $_POST['option_b'];
+    $c = $_POST['option_c'];
+    $d = $_POST['option_d'];
 
-    if($scripture && $qtext && $a && $b && $c && $d && $correct && $category && $difficulty){
-        $stmt = $mysqli->prepare("UPDATE questions SET scripture_ref=?, question=?, option_a=?, option_b=?, option_c=?, option_d=?, correct=?, category=?, difficulty=? WHERE id=?");
-        $stmt->bind_param("sssssssssi", $scripture, $qtext, $a, $b, $c, $d, $correct, $category, $difficulty, $id);
-        if($stmt->execute()) $msg = "Question updated successfully!";
-        else $msg = "Error updating question!";
-    } else $msg = "All fields are required!";
+    $update = $conn->prepare("UPDATE questions 
+                              SET question=?, category=?, difficulty=?, correct_answer=?, 
+                                  option_a=?, option_b=?, option_c=?, option_d=?
+                              WHERE id=?");
+    $update->bind_param("ssssssssi", $question, $category, $difficulty, $correct, $a, $b, $c, $d, $id);
+    $update->execute();
+
+    $success = "Question updated!";
 }
 ?>
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Edit Question</title>
-<link rel="stylesheet" href="style.css">
+    <title>Edit Question</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<?php include "sidebar_topbar.php"; ?>
+
 <div class="content">
-    <h2>Edit Question #<?= $id ?></h2>
-    <?php if($msg) echo "<p class='success'>$msg</p>"; ?>
+    <h2>Edit Question</h2>
 
-    <form method="post">
-        <input type="text" name="scripture_ref" value="<?= esc($question['scripture_ref']) ?>" required>
-        <textarea name="question" required><?= esc($question['question']) ?></textarea>
-        <input type="text" name="option_a" value="<?= esc($question['option_a']) ?>" required>
-        <input type="text" name="option_b" value="<?= esc($question['option_b']) ?>" required>
-        <input type="text" name="option_c" value="<?= esc($question['option_c']) ?>" required>
-        <input type="text" name="option_d" value="<?= esc($question['option_d']) ?>" required>
+    <?php if ($success): ?>
+        <div class="success-box"><?= $success ?></div>
+    <?php endif; ?>
 
-        <label>Correct Answer:</label>
-        <select name="correct" required>
-            <option value="A" <?= $question['correct']=='A'?'selected':'' ?>>A</option>
-            <option value="B" <?= $question['correct']=='B'?'selected':'' ?>>B</option>
-            <option value="C" <?= $question['correct']=='C'?'selected':'' ?>>C</option>
-            <option value="D" <?= $question['correct']=='D'?'selected':'' ?>>D</option>
-        </select>
+    <form method="POST">
+        <label>Question:</label>
+        <textarea name="question" required><?= $questionData['question'] ?></textarea>
 
         <label>Category:</label>
-        <select name="category" required>
-            <option value="Faith" <?= $question['category']=='Faith'?'selected':'' ?>>Faith</option>
-            <option value="Gospels" <?= $question['category']=='Gospels'?'selected':'' ?>>Gospels</option>
-            <option value="Prophecy" <?= $question['category']=='Prophecy'?'selected':'' ?>>Prophecy</option>
-            <option value="Wisdom" <?= $question['category']=='Wisdom'?'selected':'' ?>>Wisdom</option>
+        <select name="category">
+            <option <?= $questionData['category']=="Faith"?"selected":"" ?>>Faith</option>
+            <option <?= $questionData['category']=="Gospels"?"selected":"" ?>>Gospels</option>
+            <option <?= $questionData['category']=="Prophecy"?"selected":"" ?>>Prophecy</option>
+            <option <?= $questionData['category']=="Commandments"?"selected":"" ?>>Commandments</option>
         </select>
 
         <label>Difficulty:</label>
-        <select name="difficulty" required>
-            <option value="Easy" <?= $question['difficulty']=='Easy'?'selected':'' ?>>Easy</option>
-            <option value="Medium" <?= $question['difficulty']=='Medium'?'selected':'' ?>>Medium</option>
-            <option value="Hard" <?= $question['difficulty']=='Hard'?'selected':'' ?>>Hard</option>
+        <select name="difficulty">
+            <option <?= $questionData['difficulty']=="Easy"?"selected":"" ?>>Easy</option>
+            <option <?= $questionData['difficulty']=="Medium"?"selected":"" ?>>Medium</option>
+            <option <?= $questionData['difficulty']=="Hard"?"selected":"" ?>>Hard</option>
         </select>
 
-        <button type="submit">Update Question</button>
+        <label>Correct Answer:</label>
+        <input type="text" name="correct_answer" value="<?= $questionData['correct_answer'] ?>">
+
+        <label>Option A:</label>
+        <input type="text" name="option_a" value="<?= $questionData['option_a'] ?>">
+
+        <label>Option B:</label>
+        <input type="text" name="option_b" value="<?= $questionData['option_b'] ?>">
+
+        <label>Option C:</label>
+        <input type="text" name="option_c" value="<?= $questionData['option_c'] ?>">
+
+        <label>Option D:</label>
+        <input type="text" name="option_d" value="<?= $questionData['option_d'] ?>">
+
+        <button type="submit">Save Changes</button>
     </form>
 
-    <p><a href="index.php">Back to Admin Dashboard</a></p>
 </div>
 </body>
 </html>
