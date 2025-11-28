@@ -17,6 +17,11 @@ $email = $_SESSION['user_email'];
 </head>
 <body>
 <div class="container">
+<p>
+    <a href="quiz_history.php" class="btn">My Quiz History</a> |
+    <a href="leaderboard.php" class="btn">Leaderboard</a> |
+    <a href="auth/logout.php" class="btn">Logout</a>
+</p>
 
   <h1>Christian Bible Quiz</h1>
   <p class="small">Welcome, <strong><?= esc($name) ?></strong> (<?= esc($email) ?>)</p>
