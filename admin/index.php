@@ -58,7 +58,7 @@ $res = $mysqli->query($sql);
         <a href="export_csv.php" class="btn btn-edit">Export CSV</a>
     </p>
 	<p>CSV format:</p>
-<p>scripture_ref,question,option_a,option_b,option_c,option_d,correct,category,difficulty
+<p>scripture_ref,question,option_a,option_b,option_c,option_d,correct,category,difficulty<br>
 John 3:16,Who loved the world?,God,Jesus,Prophet,Angel,A,Faith,Easy
 </p>
     <table>
