@@ -1,62 +1,34 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/functions.php';
 
-// Require user to be logged in
-requireLogin();
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
-$name  = $_SESSION['user_name'];
-$email = $_SESSION['user_email'];
+// Now we can use session variables
+$user_name = $_SESSION['user_name'];
+$user_email = $_SESSION['user_email'];
 ?>
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Christian Bible Quiz - Start</title>
-<link rel="stylesheet" href="style.css">
+    <title>Welcome to Christian Quiz</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-<p>
-    <a href="quiz_history.php" class="btn">My Quiz History</a> |
-    <a href="leaderboard.php" class="btn">Leaderboard</a> |
-    <a href="auth/logout.php" class="btn">Logout</a>
-</p>
+    <h2>Welcome, <?= htmlspecialchars($user_name); ?>!</h2>
+    <p>Email: <?= htmlspecialchars($user_email); ?></p>
 
-  <h1>Christian Bible Quiz</h1>
-  <p class="small">Welcome, <strong><?= esc($name) ?></strong> (<?= esc($email) ?>)</p>
-
-  <form action="quiz.php" method="get">
-
-    <label>Category</label>
-    <select name="category" required>
-      <option value="Faith">Faith</option>
-      <option value="Gospels">Gospels</option>
-      <option value="Prophecy">Prophecy</option>
-      <option value="Wisdom">Wisdom</option>
-      <option value="Prayer">Prayer</option>
-      <option value="End Times">End Times</option>
-    </select>
-
-    <label>Difficulty</label>
-    <select name="difficulty" required>
-      <option value="Easy">Easy</option>
-      <option value="Medium">Medium</option>
-      <option value="Hard">Hard</option>
-    </select>
-
-    <label>Number of Questions</label>
-    <select name="n">
-      <option value="5">5</option>
-      <option value="10" selected>10</option>
-      <option value="15">15</option>
-      <option value="20">20</option>
-    </select>
-
-    <button type="submit" style="margin-top:15px;">Start Quiz</button>
-    <a class="link" href="leaderboard.php" style="margin-left:12px;">Leaderboard</a>
-  </form>
-
+    <p>
+        <a href="quiz.php" class="btn">Take Quiz</a> |
+        <a href="quiz_history.php" class="btn">My Quiz History</a> |
+        <a href="leaderboard.php" class="btn">Leaderboard</a> |
+        <a href="logout.php" class="btn">Logout</a>
+    </p>
 </div>
 </body>
 </html>
