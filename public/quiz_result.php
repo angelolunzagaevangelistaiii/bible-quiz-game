@@ -24,8 +24,7 @@ $score_display = $is_correct ? 1 : 0;
     <h2>Quiz Result</h2>
 
     <p><strong>Question:</strong> <?= htmlspecialchars($quiz['question']); ?></p>
-    <p><strong>Your Answer:</strong> <?= htmlspecialchars($quiz['selected']); ?> - 
-        <?= htmlspecialchars($quiz['option_' . strtolower($quiz['selected'])] ?? ''); ?></p>
+    <p><strong>Your Answer:</strong> <?= htmlspecialchars($quiz['selected']); ?> - <?= htmlspecialchars($quiz['option_' . strtolower($quiz['selected'])] ?? ''); ?></p>
     <p><strong>Correct Answer:</strong> <?= htmlspecialchars($quiz['correct']); ?> - <?= htmlspecialchars($quiz['correct_text']); ?></p>
 
     <p><strong>Category:</strong> <?= htmlspecialchars($quiz['category']); ?></p>
