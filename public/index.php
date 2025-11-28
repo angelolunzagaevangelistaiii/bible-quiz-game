@@ -1,42 +1,60 @@
 <?php
+// public/index.php - User landing page to enter name/email and pick category/difficulty
 session_start();
-require_once __DIR__ . '/../src/db.php';
 require_once __DIR__ . '/../src/functions.php';
-if (!isset($_SESSION['user_id'])) header("Location: login.php");
+
+// If user previously set name/email in session, prefill
+$prefName = $_SESSION['user_name'] ?? '';
+$prefEmail = $_SESSION['user_email'] ?? '';
+
 ?>
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>Bible Quiz - Dashboard</title><link rel="stylesheet" href="style.css"></head>
+<head>
+<meta charset="utf-8">
+<title>Christian Bible Quiz - Start</title>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
 <div class="container">
-  <h1>Bible Quiz Game</h1>
-  <p>Welcome, <?php echo esc($_SESSION['name']); ?> | <a href="logout.php">Logout</a></p>
-  <hr>
-  <h3>Start a Quiz</h3>
-  <form id="start-form" method="get" action="quiz.php">
-    <label>Number of questions:
-      <select name="n">
-        <option value="5">5</option>
-        <option value="10" selected>10</option>
-        <option value="15">15</option>
-      </select>
-    </label>
-    <label>Time per question (seconds):
-      <select name="t">
-        <option value="15">15</option>
-        <option value="20" selected>20</option>
-        <option value="30">30</option>
-      </select>
-    </label>
-    <button type="submit">Start Quiz</button>
+  <h1>Christian Bible Quiz</h1>
+  <p class="small">Enter your details, choose a category and difficulty, then start the quiz.</p>
+
+  <form action="quiz.php" method="get">
+    <label>Your name</label>
+    <input type="text" name="name" value="<?= esc($prefName) ?>" required>
+
+    <label>Your email</label>
+    <input type="email" name="email" value="<?= esc($prefEmail) ?>" required>
+
+    <label>Category</label>
+    <select name="category" required>
+      <option value="Faith">Faith</option>
+      <option value="Gospels">Gospels</option>
+      <option value="Prophecy">Prophecy</option>
+      <option value="Wisdom">Wisdom</option>
+      <option value="Prayer">Prayer</option>
+      <option value="End Times">End Times</option>
+    </select>
+
+    <label>Difficulty</label>
+    <select name="difficulty" required>
+      <option value="Easy">Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Hard">Hard</option>
+    </select>
+
+    <label>Number of questions</label>
+    <select name="n">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+    </select>
+
+    <div style="margin-top:12px;">
+      <button type="submit">Start Quiz</button>
+      <a class="link" href="leaderboard.php" style="margin-left:12px;">View Leaderboard</a>
+    </div>
   </form>
-
-  <hr>
-  <p><a href="leaderboard.php">View Leaderboard</a></p>
-  <?php if (isAdmin()): ?>
-    <p><a href="../admin/index.php">Admin: Manage Questions</a></p>
-<?php endif; ?>
-
 </div>
 </body>
 </html>
