@@ -9,4 +9,3 @@ function requireAdminLogin() {
         exit;
     }
 }
-?>
