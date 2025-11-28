@@ -50,10 +50,11 @@ CREATE TABLE IF NOT EXISTS leaderboard (
 
 -- sample user (password '123456')
 INSERT INTO users (name,email,password) VALUES
-('Test User','test@example.com','$2y$10$QmVdV1C7IGqN9dW9I5tz1e9O5.1pLX/xmOZbDxYOfpEiyrJSpO1fu');
+('Test User','test@example.com','$2y$10$Ap2l0dx0uSuaoyWSQn2ToOkyp6UpH9x0LulzjhQYU7lnsrQ/szDXC');
 
 -- sample questions
 INSERT INTO questions (scripture_ref,question,option_a,option_b,option_c,option_d,correct) VALUES
 ('John 3:16','What is the core message of John 3:16?','God so loved the world','God is angry','God is distant','God is silent','A'),
 ('Genesis 1:1','How does Genesis 1:1 begin?','In the beginning God created the heavens and the earth','God created man first','In the end God created','God rested first','A'),
 ('Psalm 23:1','Psalm 23 opens with which phrase?','The Lord is my shepherd','The Lord is my king','The Lord is my judge','The Lord is my light','A');
+
