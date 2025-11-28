@@ -1,12 +1,12 @@
 <?php
-// public/index.php - User landing page to enter name/email and pick category/difficulty
 session_start();
 require_once __DIR__ . '/../src/functions.php';
 
-// If user previously set name/email in session, prefill
-$prefName = $_SESSION['user_name'] ?? '';
-$prefEmail = $_SESSION['user_email'] ?? '';
+// Require user to be logged in
+requireLogin();
 
+$name  = $_SESSION['user_name'];
+$email = $_SESSION['user_email'];
 ?>
 <!doctype html>
 <html>
@@ -17,15 +17,11 @@ $prefEmail = $_SESSION['user_email'] ?? '';
 </head>
 <body>
 <div class="container">
+
   <h1>Christian Bible Quiz</h1>
-  <p class="small">Enter your details, choose a category and difficulty, then start the quiz.</p>
+  <p class="small">Welcome, <strong><?= esc($name) ?></strong> (<?= esc($email) ?>)</p>
 
   <form action="quiz.php" method="get">
-    <label>Your name</label>
-    <input type="text" name="name" value="<?= esc($prefName) ?>" required>
-
-    <label>Your email</label>
-    <input type="email" name="email" value="<?= esc($prefEmail) ?>" required>
 
     <label>Category</label>
     <select name="category" required>
@@ -44,17 +40,18 @@ $prefEmail = $_SESSION['user_email'] ?? '';
       <option value="Hard">Hard</option>
     </select>
 
-    <label>Number of questions</label>
+    <label>Number of Questions</label>
     <select name="n">
       <option value="5">5</option>
       <option value="10" selected>10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
     </select>
 
-    <div style="margin-top:12px;">
-      <button type="submit">Start Quiz</button>
-      <a class="link" href="leaderboard.php" style="margin-left:12px;">View Leaderboard</a>
-    </div>
+    <button type="submit" style="margin-top:15px;">Start Quiz</button>
+    <a class="link" href="leaderboard.php" style="margin-left:12px;">Leaderboard</a>
   </form>
+
 </div>
 </body>
 </html>
