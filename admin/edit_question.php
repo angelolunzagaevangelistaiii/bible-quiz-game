@@ -1,101 +1,81 @@
 <?php
-session_start();
-require "../config/db.php";
-require "auth_check.php";
+require_once "admin_protect.php";
+require_once "../config/config.php";
 
-if (!isset($_GET['id'])) {
-    header("Location: manage_questions.php");
-    exit;
-}
+if (!isset($_GET['id'])) { header("Location: manage_questions.php"); exit; }
 
-$id = $_GET['id'];
+$id = intval($_GET['id']);
+$error = $success = '';
 
-$stmt = $conn->prepare("SELECT * FROM questions WHERE id = ?");
+$stmt = $conn->prepare("SELECT * FROM questions WHERE id=? LIMIT 1");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-$questionData = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$question = $result->fetch_assoc();
+$stmt->close();
 
-if (!$questionData) {
-    die("Question not found.");
-}
+if (!$question) die("Question not found.");
 
-$success = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $scripture_ref = trim($_POST['scripture_ref']);
+    $q_text = trim($_POST['question']);
+    $option_a = trim($_POST['option_a']);
+    $option_b = trim($_POST['option_b']);
+    $option_c = trim($_POST['option_c']);
+    $option_d = trim($_POST['option_d']);
+    $correct = trim($_POST['correct']);
+    $category = trim($_POST['category']);
+    $difficulty = trim($_POST['difficulty']);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $question = $_POST['question'];
-    $category = $_POST['category'];
-    $difficulty = $_POST['difficulty'];
-    $correct = $_POST['correct_answer'];
-    $a = $_POST['option_a'];
-    $b = $_POST['option_b'];
-    $c = $_POST['option_c'];
-    $d = $_POST['option_d'];
-
-    $update = $conn->prepare("UPDATE questions 
-                              SET question=?, category=?, difficulty=?, correct_answer=?, 
-                                  option_a=?, option_b=?, option_c=?, option_d=?
-                              WHERE id=?");
-    $update->bind_param("ssssssssi", $question, $category, $difficulty, $correct, $a, $b, $c, $d, $id);
-    $update->execute();
-
-    $success = "Question updated!";
+    $stmt = $conn->prepare("UPDATE questions SET scripture_ref=?, question=?, option_a=?, option_b=?, option_c=?, option_d=?, correct=?, category=?, difficulty=? WHERE id=?");
+    $stmt->bind_param("sssssssssi", $scripture_ref, $q_text, $option_a, $option_b, $option_c, $option_d, $correct, $category, $difficulty, $id);
+    if ($stmt->execute()) $success = "Question updated successfully!";
+    else $error = "Database error: " . $stmt->error;
+    $stmt->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Edit Question</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../public/style.css">
 </head>
 <body>
-
-<?php include "sidebar_topbar.php"; ?>
-
-<div class="content">
+<div class="container">
     <h2>Edit Question</h2>
-
-    <?php if ($success): ?>
-        <div class="success-box"><?= $success ?></div>
-    <?php endif; ?>
-
+    <?php if($success) echo "<p style='color:green;'>$success</p>"; ?>
+    <?php if($error) echo "<p style='color:red;'>$error</p>"; ?>
     <form method="POST">
-        <label>Question:</label>
-        <textarea name="question" required><?= $questionData['question'] ?></textarea>
+        <label>Scripture Reference:</label><br>
+        <input type="text" name="scripture_ref" value="<?= htmlspecialchars($question['scripture_ref']) ?>" required><br><br>
 
-        <label>Category:</label>
-        <select name="category">
-            <option <?= $questionData['category']=="Faith"?"selected":"" ?>>Faith</option>
-            <option <?= $questionData['category']=="Gospels"?"selected":"" ?>>Gospels</option>
-            <option <?= $questionData['category']=="Prophecy"?"selected":"" ?>>Prophecy</option>
-            <option <?= $questionData['category']=="Commandments"?"selected":"" ?>>Commandments</option>
-        </select>
+        <label>Question:</label><br>
+        <textarea name="question" required><?= htmlspecialchars($question['question']) ?></textarea><br><br>
 
-        <label>Difficulty:</label>
-        <select name="difficulty">
-            <option <?= $questionData['difficulty']=="Easy"?"selected":"" ?>>Easy</option>
-            <option <?= $questionData['difficulty']=="Medium"?"selected":"" ?>>Medium</option>
-            <option <?= $questionData['difficulty']=="Hard"?"selected":"" ?>>Hard</option>
-        </select>
+        <label>Option A:</label><br>
+        <input type="text" name="option_a" value="<?= htmlspecialchars($question['option_a']) ?>" required><br><br>
 
-        <label>Correct Answer:</label>
-        <input type="text" name="correct_answer" value="<?= $questionData['correct_answer'] ?>">
+        <label>Option B:</label><br>
+        <input type="text" name="option_b" value="<?= htmlspecialchars($question['option_b']) ?>" required><br><br>
 
-        <label>Option A:</label>
-        <input type="text" name="option_a" value="<?= $questionData['option_a'] ?>">
+        <label>Option C:</label><br>
+        <input type="text" name="option_c" value="<?= htmlspecialchars($question['option_c']) ?>" required><br><br>
 
-        <label>Option B:</label>
-        <input type="text" name="option_b" value="<?= $questionData['option_b'] ?>">
+        <label>Option D:</label><br>
+        <input type="text" name="option_d" value="<?= htmlspecialchars($question['option_d']) ?>" required><br><br>
 
-        <label>Option C:</label>
-        <input type="text" name="option_c" value="<?= $questionData['option_c'] ?>">
+        <label>Correct Answer (A/B/C/D):</label><br>
+        <input type="text" name="correct" maxlength="1" value="<?= htmlspecialchars($question['correct']) ?>" required><br><br>
 
-        <label>Option D:</label>
-        <input type="text" name="option_d" value="<?= $questionData['option_d'] ?>">
+        <label>Category:</label><br>
+        <input type="text" name="category" value="<?= htmlspecialchars($question['category']) ?>" required><br><br>
 
-        <button type="submit">Save Changes</button>
+        <label>Difficulty:</label><br>
+        <input type="text" name="difficulty" value="<?= htmlspecialchars($question['difficulty']) ?>" required><br><br>
+
+        <button type="submit">Update Question</button>
     </form>
-
+    <p><a href="manage_questions.php">Back to Manage Questions</a></p>
 </div>
 </body>
 </html>
