@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// User info
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_name'];
 $user_email = $_SESSION['user_email'];
@@ -33,17 +32,19 @@ if ($diff_result) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $selected = $_POST['answer'];
     $correct_answer = $_POST['correct_answer'];
+    $question_text = $_POST['question_text'];
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
-    $question_text = $_POST['question_text'];
 
     $score = ($selected === $correct_answer) ? 1 : 0;
 
+    // Save to leaderboard
     $stmt = $conn->prepare("INSERT INTO leaderboard (user_id, name, email, score, category, difficulty) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ississ", $user_id, $user_name, $user_email, $score, $category, $difficulty);
     $stmt->execute();
     $stmt->close();
 
+    // Store result in session for quiz_result.php
     $_SESSION['last_quiz'] = [
         'question' => $question_text,
         'selected' => $selected,
@@ -57,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     exit;
 }
 
-// Stage 1: Fetch question after selection
+// Stage 1: Fetch question after category/difficulty selection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
@@ -88,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
 
     <?php if (!$question): ?>
-        <!-- Stage 1: Category/Difficulty -->
+        <!-- Stage 1: Category/Difficulty Selection -->
         <form method="POST">
             <label>Category:</label>
             <select name="category" required>
@@ -105,10 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
             <button type="submit" name="fetch_question">Start Quiz</button>
         </form>
     <?php else: ?>
-        <!-- Stage 2: Show Question -->
+        <!-- Stage 2: Show Question Form -->
         <form method="POST">
             <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
 
+            <!-- Hidden fields for session and leaderboard -->
             <input type="hidden" name="question_text" value="<?= htmlspecialchars($question['question']); ?>">
             <input type="hidden" name="category" value="<?= htmlspecialchars($question['category']); ?>">
             <input type="hidden" name="difficulty" value="<?= htmlspecialchars($question['difficulty']); ?>">
