@@ -2,7 +2,6 @@
 require_once "admin_protect.php";
 require_once "../config/config.php";
 
-// Fetch leaderboard: count correct answers per user
 $sql = "SELECT user_name, user_email, COUNT(*) AS total_correct
         FROM user_quiz_results
         WHERE is_correct = 1
@@ -11,11 +10,10 @@ $sql = "SELECT user_name, user_email, COUNT(*) AS total_correct
 
 $result = $conn->query($sql);
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Leaderboard</title>
+    <title>Leaderboard</title>
     <link rel="stylesheet" href="../public/style.css">
 </head>
 <body>
@@ -28,7 +26,7 @@ $result = $conn->query($sql);
             <th>Email</th>
             <th>Total Correct Answers</th>
         </tr>
-        <?php $i = 1; while($row = $result->fetch_assoc()): ?>
+        <?php $i=1; while($row = $result->fetch_assoc()): ?>
         <tr>
             <td><?= $i ?></td>
             <td><?= htmlspecialchars($row['user_name']) ?></td>
