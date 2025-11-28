@@ -60,15 +60,15 @@ CREATE TABLE leaderboard (
 );
 
 
-CREATE TABLE admin_users (
+CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO admin_users (name,email,password)
+INSERT INTO admins (name,email,password)
 VALUES ('Administrator', 'admin@example.com', '$2y$10$Ap2l0dx0uSuaoyWSQn2ToOkyp6UpH9x0LulzjhQYU7lnsrQ/szDXC');
 
 -- sample user (password '123456')
@@ -82,4 +82,5 @@ INSERT INTO questions (scripture_ref, question, option_a, option_b, option_c, op
 ('Psalm 23:1','Psalm 23 starts with which phrase?','The Lord is my shepherd','The Lord is my king','The Lord is my judge','The Lord is my light','A','Wisdom','Easy'),
 ('Matthew 28:19','What are followers commanded to do in Matthew 28:19?','Make disciples of all nations','Pray only on Sundays','Hide your faith','Leave the city','A','Gospels','Medium'),
 ('Revelation 21:4','What will YHVH do in Revelation 21:4?','Wipe away every tear','Send every tear back','Make tears multiply','Teach people to ignore pain','A','Prophecy','Medium');
+
 
