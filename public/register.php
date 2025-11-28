@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
-    // Validation
     if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
         $errors[] = "All fields are required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -18,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm_password) {
         $errors[] = "Passwords do not match.";
     } else {
-        // Check if email exists
+        // Check for existing email
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -27,15 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->num_rows > 0) {
             $errors[] = "Email is already registered.";
         } else {
-            // Hash password
+            // Hash password and insert
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-            // Insert user
             $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $name, $email, $password_hash);
 
             if ($stmt->execute()) {
-                // Set session and redirect to index.php
                 $_SESSION['user_id'] = $stmt->insert_id;
                 $_SESSION['user_name'] = $name;
                 $_SESSION['user_email'] = $email;
@@ -58,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div class="container">
     <h2>Register</h2>
 
@@ -69,21 +66,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
         <label>Name:</label>
-        <input type="text" name="name" required>
+        <input type="text" name="name" placeholder="Enter your name" required>
 
         <label>Email:</label>
-        <input type="email" name="email" required>
+        <input type="email" name="email" placeholder="Enter your email" required>
 
         <label>Password:</label>
-        <input type="password" name="password" required>
+        <input type="password" name="password" placeholder="Enter your password" required>
 
         <label>Confirm Password:</label>
-        <input type="password" name="confirm_password" required>
+        <input type="password" name="confirm_password" placeholder="Confirm your password" required>
 
         <button type="submit">Register</button>
     </form>
 
     <p>Already have an account? <a href="login.php">Login here</a></p>
 </div>
+
 </body>
 </html>
