@@ -19,8 +19,12 @@ bible-quiz-game/
 ├── .gitignore
 └── README.md
 ├── admin/
+│   ├── admin_login.php
+│   ├── admin_logout.php
+│   ├── admin_protect.php
 │   ├── index.php
 │   ├── add_question.php
 │   ├── edit_question.php
 │   ├── delete_question.php
 │   └── style.css   (optional, can use public/style.css or duplicate)
+
