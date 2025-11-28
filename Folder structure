@@ -16,10 +16,9 @@ bible-quiz-game/
 │   ├── quiz_result.php        # Quiz result page
 │   ├── leaderboard.php        # Public leaderboard
 │   ├── quiz_history.php       # User's past quiz attempts
-|   ├── auth/
-│       ├── login.php              # User login page
-│       ├── register.php           # User registration page
-│       ├── logout.php             # User logout
+│   ├── login.php              # User login page
+│   ├── register.php           # User registration page
+│   ├── logout.php             # User logout
 │   └── style.css              # Public CSS
 │
 ├── admin/                     # Admin panel pages
@@ -37,4 +36,5 @@ bible-quiz-game/
 │
 ├── .gitignore                 # Ignore config.php, sessions, sensitive files
 ├── README.md
+
 
