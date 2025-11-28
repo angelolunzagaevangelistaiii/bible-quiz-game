@@ -1,7 +1,12 @@
 <?php
-// copy this file, edit values for your environment
-define('DB_HOST','localhost');
-define('DB_USER','root');
-define('DB_PASS','');        // set your MySQL password
-define('DB_NAME','bible_quiz_game');
+$host = "localhost";          // Your DB host
+$user = "faith7qz_projects";       // Your DB username
+$pass = "qwer1234qwer";   // Your DB password
+$dbname = "faith7qz_bible_quiz_game"; // Your DB name
+
+$conn = new mysqli($host, $user, $pass, $dbname);
+
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
+}
 ?>
