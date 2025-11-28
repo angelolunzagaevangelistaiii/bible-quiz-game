@@ -8,6 +8,7 @@ require "auth_check.php";
 <div class="sidebar">
     <h2><?= htmlspecialchars($_SESSION['admin_name']); ?></h2>
     <a href="index.php">Dashboard</a>
+    <a href="leaderboard.php">Leaderboard</a>
     <a href="add_question.php">Add Question</a>
     <a href="manage_questions.php">Manage Questions</a>
     <a href="admin_logout.php">Logout</a>
