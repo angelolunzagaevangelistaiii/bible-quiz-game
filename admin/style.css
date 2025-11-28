@@ -137,7 +137,7 @@ form {
 input[type="text"],
 textarea,
 select {
-    width: 100%;
+    width: -webkit-fill-available;
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 15px;
@@ -160,3 +160,4 @@ button:hover,
 input[type="submit"]:hover {
     opacity: 0.85;
 }
+
