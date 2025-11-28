@@ -31,7 +31,7 @@ if ($diff_result) {
 // Handle answer submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $selected = $_POST['answer'];
-    $correct_answer = $_POST['correct_answer'];
+    $correct_answer = $_POST['correct_answer']; // now uses correct column
     $question_text = $_POST['question_text'];
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
         'question' => $question_text,
         'selected' => $selected,
         'correct' => $correct_answer,
-        'correct_text' => ${'option_' . strtolower($correct_answer)},
+        'correct_text' => ${'option_' . strtolower($correct_answer)}, // text of correct answer
         'option_a' => $option_a,
         'option_b' => $option_b,
         'option_c' => $option_c,
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     exit;
 }
 
-// Handle question fetch after category/difficulty selection
+// Fetch question after category/difficulty selection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
@@ -99,7 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
 
     <?php if (!$question): ?>
-        <!-- Stage 1: Select category/difficulty -->
         <form method="POST">
             <label>Category:</label>
             <select name="category" required>
@@ -116,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
             <button type="submit" name="fetch_question">Start Quiz</button>
         </form>
     <?php else: ?>
-        <!-- Stage 2: Show question -->
         <form method="POST">
             <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
 
@@ -124,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
             <input type="hidden" name="question_text" value="<?= htmlspecialchars($question['question']); ?>">
             <input type="hidden" name="category" value="<?= htmlspecialchars($question['category']); ?>">
             <input type="hidden" name="difficulty" value="<?= htmlspecialchars($question['difficulty']); ?>">
-            <input type="hidden" name="correct_answer" value="<?= htmlspecialchars($question['correct_answer']); ?>">
+            <input type="hidden" name="correct_answer" value="<?= htmlspecialchars($question['correct']); ?>">
             <input type="hidden" name="option_a" value="<?= htmlspecialchars($question['option_a']); ?>">
             <input type="hidden" name="option_b" value="<?= htmlspecialchars($question['option_b']); ?>">
             <input type="hidden" name="option_c" value="<?= htmlspecialchars($question['option_c']); ?>">
