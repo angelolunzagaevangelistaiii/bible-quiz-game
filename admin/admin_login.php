@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../config/config.php"; // DB connection
+require_once "../config/config.php";
 
 $error = '';
 
@@ -8,15 +8,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    // Fetch admin from DB
+    // Fetch admin by email
     $stmt = $conn->prepare("SELECT * FROM admins WHERE email=? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     $admin = $result->fetch_assoc();
 
+    // Verify password
     if ($admin && password_verify($password, $admin['password'])) {
-        // Successful login
         $_SESSION['admin_id'] = $admin['id'];
         $_SESSION['admin_name'] = $admin['name'];
         header("Location: index.php");
