@@ -1,49 +1,59 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/db.php';
+require "../config/db.php";
+
+// If already logged in, redirect to dashboard
+if (isset($_SESSION['admin_id'])) {
+    header("Location: index.php");
+    exit;
+}
 
 $error = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $mysqli->real_escape_string($_POST['email']);
-    $password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-    $res = $mysqli->query("SELECT * FROM admin_users WHERE email='$email' LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, name, email, password FROM admins WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
 
-    if ($res->num_rows === 1) {
-        $admin = $res->fetch_assoc();
+    if ($stmt->num_rows == 1) {
+        $stmt->bind_result($id, $name, $email, $hashed_password);
+        $stmt->fetch();
 
-        if (password_verify($password, $admin['password'])) {
-            $_SESSION['admin_id'] = $admin['id'];
-            $_SESSION['admin_name'] = $admin['name'];
-            $_SESSION['admin_email'] = $admin['email'];
-
+        if (password_verify($password, $hashed_password)) {
+            $_SESSION['admin_id'] = $id;
+            $_SESSION['admin_name'] = $name;
+            $_SESSION['admin_email'] = $email;
             header("Location: index.php");
             exit;
         } else {
             $error = "Incorrect password.";
         }
     } else {
-        $error = "No admin found using that email.";
+        $error = "Admin not found.";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin Login</title>
-<link rel="stylesheet" href="../public/style.css">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
+
+<div class="login-box">
     <h2>Admin Login</h2>
 
     <?php if ($error): ?>
-        <p class="error"><?= $error ?></p>
+        <div class="error-box"><?= $error ?></div>
     <?php endif; ?>
 
-    <form method="post">
-
+    <form method="POST">
         <label>Email</label>
         <input type="email" name="email" required>
 
@@ -52,8 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">Login</button>
     </form>
-
-    <p><a href="../public/index.php">Back to site</a></p>
 </div>
+
 </body>
 </html>
