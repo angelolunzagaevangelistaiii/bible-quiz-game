@@ -1,67 +1,57 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/db.php';
-require_once __DIR__ . '/../src/functions.php';
-requireLogin();
-requireAdmin();
+require "../config/db.php";
+require "auth_check.php";
 
-$msg = '';
+$success = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $scripture = trim($_POST['scripture_ref']);
-    $question  = trim($_POST['question']);
-    $a = trim($_POST['option_a']);
-    $b = trim($_POST['option_b']);
-    $c = trim($_POST['option_c']);
-    $d = trim($_POST['option_d']);
-    $correct = $_POST['correct'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $question = $_POST['question'];
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
+    $correct = $_POST['correct_answer'];
+    $a = $_POST['option_a'];
+    $b = $_POST['option_b'];
+    $c = $_POST['option_c'];
+    $d = $_POST['option_d'];
 
-    if ($scripture && $question && $a && $b && $c && $d && $correct && $category && $difficulty) {
-        $stmt = $mysqli->prepare("INSERT INTO questions (scripture_ref, question, option_a, option_b, option_c, option_d, correct, category, difficulty)
-                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssss", $scripture, $question, $a, $b, $c, $d, $correct, $category, $difficulty);
-        if($stmt->execute()) $msg = "Question added successfully!";
-        else $msg = "Error adding question!";
-    } else $msg = "All fields are required!";
+    $stmt = $conn->prepare("INSERT INTO questions (question, category, difficulty, correct_answer, option_a, option_b, option_c, option_d)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssss", $question, $category, $difficulty, $correct, $a, $b, $c, $d);
+    $stmt->execute();
+
+    $success = "Question added successfully!";
 }
 ?>
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Add Question</title>
-<link rel="stylesheet" href="style.css">
+    <title>Add Question</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<?php include "sidebar_topbar.php"; ?>
+
 <div class="content">
-    <h2>Add New Question</h2>
-    <?php if($msg) echo "<p class='success'>$msg</p>"; ?>
+    <h2>Add Question</h2>
 
-    <form method="post">
-        <input type="text" name="scripture_ref" placeholder="Scripture Reference" required>
-        <textarea name="question" placeholder="Question text" required></textarea>
-        <input type="text" name="option_a" placeholder="Option A" required>
-        <input type="text" name="option_b" placeholder="Option B" required>
-        <input type="text" name="option_c" placeholder="Option C" required>
-        <input type="text" name="option_d" placeholder="Option D" required>
+    <?php if ($success): ?>
+        <div class="success-box"><?= $success ?></div>
+    <?php endif; ?>
 
-        <label>Correct Answer:</label>
-        <select name="correct" required>
-            <option value="">Select Correct Option</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-        </select>
+    <form method="POST">
+
+        <label>Question:</label>
+        <textarea name="question" required></textarea>
 
         <label>Category:</label>
         <select name="category" required>
             <option value="Faith">Faith</option>
             <option value="Gospels">Gospels</option>
             <option value="Prophecy">Prophecy</option>
-            <option value="Wisdom">Wisdom</option>
+            <option value="Commandments">Commandments</option>
         </select>
 
         <label>Difficulty:</label>
@@ -71,10 +61,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Hard">Hard</option>
         </select>
 
+        <label>Correct Answer:</label>
+        <input type="text" name="correct_answer" required>
+
+        <label>Option A:</label>
+        <input type="text" name="option_a" required>
+
+        <label>Option B:</label>
+        <input type="text" name="option_b" required>
+
+        <label>Option C:</label>
+        <input type="text" name="option_c">
+
+        <label>Option D:</label>
+        <input type="text" name="option_d">
+
         <button type="submit">Add Question</button>
     </form>
-
-    <p><a href="index.php">Back to Admin Dashboard</a></p>
 </div>
 </body>
 </html>
