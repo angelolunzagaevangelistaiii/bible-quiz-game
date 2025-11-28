@@ -47,16 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
 
     // Store all data in session for quiz_result.php
     $_SESSION['last_quiz'] = [
-        'question' => $question_text,
-        'selected' => $selected,
-        'correct' => $correct_answer,
-        'option_a' => $_POST['option_a'],
-        'option_b' => $_POST['option_b'],
-        'option_c' => $_POST['option_c'],
-        'option_d' => $_POST['option_d'],
-        'category' => $category,
-        'difficulty' => $difficulty,
-        'score' => $score
+    'question' => $question_text,
+    'selected' => $selected,
+    'correct' => $correct_answer, // letter e.g., A/B/C/D
+    'correct_text' => $question['option_' . strtolower($correct_answer)], // text of correct answer
+    'option_a' => $question['option_a'],
+    'option_b' => $question['option_b'],
+    'option_c' => $question['option_c'],
+    'option_d' => $question['option_d'],
+    'category' => $category,
+    'difficulty' => $difficulty,
+    'score' => $score
     ];
 
     header("Location: quiz_result.php");
