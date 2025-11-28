@@ -11,11 +11,20 @@ $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_name'];
 $user_email = $_SESSION['user_email'];
 
-// Default: no question fetched yet
+$error = '';
 $question = null;
 
+// Fetch distinct categories and difficulties for dropdown
+$cat_result = $conn->query("SELECT DISTINCT category FROM questions");
+$categories = [];
+while ($row = $cat_result->fetch_assoc()) $categories[] = $row['category'];
+
+$diff_result = $conn->query("SELECT DISTINCT difficulty FROM questions");
+$difficulties = [];
+while ($row = $diff_result->fetch_assoc()) $difficulties[] = $row['difficulty'];
+
+// Stage 2: Submit answer
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
-    // Answer submission
     $selected = $_POST['answer'];
     $score = ($selected === $_POST['correct_answer']) ? 1 : 0;
 
@@ -36,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     exit;
 }
 
-// If category/difficulty selected, fetch question
+// Stage 1: Fetch question after category/difficulty selection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
@@ -52,22 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
         $error = "No questions found for this category and difficulty.";
     }
 }
-
-// Fetch all categories and difficulties from DB for dropdown
-$cat_result = $conn->query("SELECT DISTINCT category FROM questions");
-$diff_result = $conn->query("SELECT DISTINCT difficulty FROM questions");
-
-$categories = [];
-while ($row = $cat_result->fetch_assoc()) {
-    $categories[] = $row['category'];
-}
-
-$difficulties = [];
-while ($row = $diff_result->fetch_assoc()) {
-    $difficulties[] = $row['difficulty'];
-}
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -78,10 +72,10 @@ while ($row = $diff_result->fetch_assoc()) {
 <div class="container">
     <h2>Quiz</h2>
 
-    <?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
+    <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
 
     <?php if (!$question): ?>
-        <!-- Category & Difficulty Selection Form -->
+        <!-- Stage 1: Category/Difficulty Form -->
         <form method="POST">
             <label>Category:</label>
             <select name="category" required>
@@ -98,7 +92,7 @@ while ($row = $diff_result->fetch_assoc()) {
             <button type="submit" name="fetch_question">Start Quiz</button>
         </form>
     <?php else: ?>
-        <!-- Quiz Question Form -->
+        <!-- Stage 2: Show Question Form -->
         <form method="POST">
             <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
 
