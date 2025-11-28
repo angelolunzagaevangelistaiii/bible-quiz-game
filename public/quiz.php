@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $category = $_POST['category'];
     $difficulty = $_POST['difficulty'];
 
+    // Store score
     $score = ($selected === $correct_answer) ? 1 : 0;
 
     // Save to leaderboard
@@ -44,11 +45,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['answer'])) {
     $stmt->execute();
     $stmt->close();
 
-    // Store result in session for quiz_result.php
+    // Store all data in session for quiz_result.php
     $_SESSION['last_quiz'] = [
         'question' => $question_text,
         'selected' => $selected,
         'correct' => $correct_answer,
+        'option_a' => $_POST['option_a'],
+        'option_b' => $_POST['option_b'],
+        'option_c' => $_POST['option_c'],
+        'option_d' => $_POST['option_d'],
         'category' => $category,
         'difficulty' => $difficulty,
         'score' => $score
@@ -110,11 +115,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fetch_question'])) {
         <form method="POST">
             <p><strong><?= htmlspecialchars($question['question']); ?></strong></p>
 
-            <!-- Hidden fields for session and leaderboard -->
+            <!-- Hidden fields for quiz result -->
             <input type="hidden" name="question_text" value="<?= htmlspecialchars($question['question']); ?>">
             <input type="hidden" name="category" value="<?= htmlspecialchars($question['category']); ?>">
             <input type="hidden" name="difficulty" value="<?= htmlspecialchars($question['difficulty']); ?>">
             <input type="hidden" name="correct_answer" value="<?= htmlspecialchars($question['correct_answer']); ?>">
+            <input type="hidden" name="option_a" value="<?= htmlspecialchars($question['option_a']); ?>">
+            <input type="hidden" name="option_b" value="<?= htmlspecialchars($question['option_b']); ?>">
+            <input type="hidden" name="option_c" value="<?= htmlspecialchars($question['option_c']); ?>">
+            <input type="hidden" name="option_d" value="<?= htmlspecialchars($question['option_d']); ?>">
 
             <input type="radio" name="answer" value="A" required> <?= htmlspecialchars($question['option_a']); ?><br>
             <input type="radio" name="answer" value="B"> <?= htmlspecialchars($question['option_b']); ?><br>
