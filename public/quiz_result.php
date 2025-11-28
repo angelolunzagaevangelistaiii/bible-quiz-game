@@ -1,32 +1,42 @@
 <?php
 session_start();
-require_once __DIR__ . '/../src/functions.php';
-$score = $_SESSION['quiz_score'] ?? null;
-$total = $_SESSION['quiz_total'] ?? null;
-$name = $_SESSION['user_name'] ?? 'Guest';
-$email = $_SESSION['user_email'] ?? '';
-// clear stored attempt info if you want
-unset($_SESSION['quiz_score'], $_SESSION['quiz_total'], $_SESSION['quiz_category'], $_SESSION['quiz_difficulty'], $_SESSION['quiz_n']);
+
+// Ensure user is logged in and has a quiz result
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['last_quiz'])) {
+    // Redirect to quiz page if accessed directly
+    header("Location: quiz.php");
+    exit;
+}
+
+// Get last quiz result from session
+$quiz = $_SESSION['last_quiz'];
+
+// Optional: clear the last quiz session so user can't reload result
+unset($_SESSION['last_quiz']);
+
 ?>
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Quiz Result</title>
-<link rel="stylesheet" href="style.css">
+    <title>Quiz Result</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-  <h2>Quiz Result</h2>
+    <h2>Quiz Result</h2>
 
-  <?php if ($score === null): ?>
-    <p>No quiz result found. <a href="index.php">Start quiz</a>.</p>
-  <?php else: ?>
-    <p><strong><?= esc($name) ?></strong> (<?= esc($email) ?>)</p>
-    <p>Your score: <strong><?= intval($score) ?></strong> out of <?= intval($total) ?></p>
-    <p class="small">Your result was saved to the leaderboard.</p>
-    <p><a class="link" href="leaderboard.php">View Leaderboard</a> | <a class="link" href="index.php">Take Again</a></p>
-  <?php endif; ?>
+    <p><strong>Question:</strong> <?= htmlspecialchars($quiz['question']); ?></p>
+    <p><strong>Your Answer:</strong> <?= htmlspecialchars($quiz['selected']); ?></p>
+    <p><strong>Correct Answer:</strong> <?= htmlspecialchars($quiz['correct']); ?></p>
+    <p><strong>Category:</strong> <?= htmlspecialchars($quiz['category']); ?></p>
+    <p><strong>Difficulty:</strong> <?= htmlspecialchars($quiz['difficulty']); ?></p>
+    <p><strong>Score:</strong> <?= $quiz['score']; ?></p>
+
+    <div style="margin-top:20px;">
+        <a href="quiz.php" class="btn">Take Another Quiz</a>
+        <a href="index.php" class="btn">Back to Menu</a>
+    </div>
 </div>
 </body>
 </html>
